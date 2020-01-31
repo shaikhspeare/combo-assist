@@ -1,38 +1,103 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+body {
+  background-color: black;
   color: white;
+
 }
 
-.App-link {
-  color: #61dafb;
+body, html {
+  height: 100%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+* {
+  box-sizing: border-box;
+}
+
+.bg-image {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  width: 100vw;
+  background-image: url('./images/background.jpg');
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  
+}
+
+.content {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+
+
+.button-map {
+  position: relative;
+  width: 90vw;
+  height: 30vh;
+  background-color: #4DB6AC;
+  margin: 0 auto;
+  margin-top: 200px;
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  font-size: 24px;
+
+}
+
+.buttons-pressed {
+  display: inline-block;
+
+}
+
+.list-item {
+  display: inline-block;
+  margin-left: 10px; 
+  color: white;
+
+}
+
+.action-panel {
+  display: flex;
+  width: 90vw;
+  margin: 0 auto;
+  margin-top: 20px;
+  height: 60px;
+  justify-content: left;
+  align-items: flex-start;
+}
+
+
+.buttons button {  
+  font-family: 'Oswald';
+  letter-spacing: 0.1em;
+  margin-left: 5px;
+  font-size: 24px;
+  background-color: #d0011b;
+  color: white;
+  text-transform: uppercase;
+  font-weight: bolder;
+  border: 0px;
+  outline: 0px;
+  cursor: pointer;
+  padding: 10px;
+  width: 200px;
+  margin-top: 20px;
+
+}
+
+.progress-bar {
+  background-color: #d0011b;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 4px;
 }
