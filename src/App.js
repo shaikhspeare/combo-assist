@@ -23,6 +23,18 @@ const initialState = {
   timeElapsed: null
 };
 
+let states = [
+  {
+    state: 'initial'
+  },
+  {
+    state: 'recording'
+  },
+  {
+    state: ''
+  }
+]
+
 function toggle(action, state) {
   if (action == true) {
     console.log("Started running")
