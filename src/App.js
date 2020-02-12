@@ -17,6 +17,7 @@ import down from "./images/down.svg";
 
 const initialState = {
   recording: false,
+  playing: false,
   currPressed: {},
   buttonsPressed: [],
   currTime: null,
@@ -25,79 +26,34 @@ const initialState = {
 
 let states = [
   {
-    state: 'initial'
+    state: "initial"
   },
   {
-    state: 'recording'
+    state: "recording"
   },
   {
-    state: ''
+    state: ""
   }
-]
+];
 
-function toggle(action, state) {
-  if (action == true) {
-    console.log("Started running")
-    return {
-      currPressed: state.currPressed,
-      buttonsPressed: state.buttonsPressed,
-      currTime: Date.now(),
-      recording: true
-    };
-  } else {
-    console.log("Stopped recording");
-    return {
-      ...state,
-      recording: false,
-      timeElapsed: Date.now() - state.currTime
-    };
-  }
-}
+let buttons = {
+  X: square,
+  Y: triangle,
+  B: circle,
+  A: cross,
+  DPadDown: down,
+  DPadUp: up,
+  DPadLeft: left,
+  DPadRight: right
+};
+
+
 function reducer(state, action) {
-  // console.log("test", action.func);
-  // console.log(state);
-  console.log(action.func.begin);
-  if (action.func.toggle) {
-    let toggle = state.recording == true ? false : true
-    return {
-      ...state,
-      recording: toggle,
-      currTime: toggle === true ? Date.now() : null,
-      timeElapsed: toggle === true ? null : Date.now() - state.currTime
-    }
-  }
-
-  let buttonsPressed = state.buttonsPressed;
-
-  let currPressed = state.currPressed;
-  if (!currPressed[action.func.buttonName]) {
-    currPressed[action.func.buttonName] = {
-      button: action.func.buttonName
-    };
-  }
-
-  if (action.func.down === true) {
-    console.log("pressed");
-    currPressed[action.func.buttonName].timeDown = Date.now() - state.currTime;
-  } else {
-    console.log("released");
-    currPressed[action.func.buttonName].timeReleased =
-      Date.now() - state.currTime;
-  }
-
-  if (
-    currPressed[action.func.buttonName].timeDown &&
-    currPressed[action.func.buttonName].timeReleased
-  ) {
-    buttonsPressed.push(currPressed[action.func.buttonName]);
-    delete currPressed[action.func.buttonName];
-  }
+  console.log(action);
 
   return {
-    recording: true,
-    currPressed,
-    buttonsPressed,
-    currTime: state.currTime
+    ...state,
+    ...action
   };
 }
 
@@ -109,8 +65,32 @@ function disconnectHandler(gamepadIndex) {
   console.log(`Gamepad ${gamepadIndex} disconnected !`);
 }
 
-function buttonChangeHandler(buttonName, down) {
-  return { buttonName, down };
+function buttonChangeHandler(buttonName, down, state) {
+  let currPressed = state.currPressed;
+
+  if (currPressed[buttonName] === undefined) {
+    currPressed[buttonName] = {
+      button: buttonName
+    };
+  }
+
+  if (down === true) {
+    currPressed[buttonName].timeDown = Date.now() - state.currTime;
+  } else {
+    currPressed[buttonName].timeReleased = Date.now() - state.currTime;
+  }
+
+  let buttonsPressed = state.buttonsPressed;
+
+  if (
+    currPressed[buttonName].timeDown &&
+    currPressed[buttonName].timeReleased
+  ) {
+    buttonsPressed.push(currPressed[buttonName]);
+    delete currPressed[buttonName];
+  }
+
+  return { currPressed, buttonsPressed };
 }
 
 function axisChangeHandler(axisName, value, previousValue) {
@@ -130,46 +110,58 @@ function updateProgress(ref, duration) {
 
   var basicTimeline = anime.timeline();
   console.log(ref);
-  basicTimeline
-    .add({
-      targets: '.progress-bar',
-      width:'100%',
-      duration,
-      easing: "easeOutSine"
-    })
-    ;
+  basicTimeline.add({
+    targets: ".progress-bar",
+    width: "100%",
+    duration,
+    easing: "easeOutSine"
+  });
 }
 function getButton(buttonName) {
-  let source;
+  return <img width={"30px"} src={buttons[buttonName]} />;
+}
 
-  if (buttonName === "X") {
-    source = square;
-  } else if (buttonName === "Y") {
-    source = triangle;
-  } else if (buttonName === "B") {
-    source = circle;
-  } else if (buttonName === "DPadDown") {
-    source = down;
-  } else if (buttonName === "DPadUp") {
-    source = up;
-  } else if (buttonName === "DPadLeft") {
-    source = left;
-  } else if (buttonName === "DPadRight") {
-    source = right;
+function toggleRecording(state) {
+  if (state.recording === false) {
+    console.log("Started recording");
+    message.info("Now recording...");
+
+    return {
+      currPressed: state.currPressed,
+      buttonsPressed: state.buttonsPressed,
+      currTime: Date.now(),
+      recording: true
+    };
   } else {
-    source = cross;
+    console.log("Stopped recording");
+    message.info("Stopped recording...");
+
+    return {
+      ...state,
+      recording: false,
+      timeElapsed: Date.now() - state.currTime
+    };
   }
-  return <img width={"30px"} src={source} />;
-}
 
-function toggleRecording() {
-  message.info("Now recording...");
-  return { toggle: true };
+  // return {
+  //   ...state,
+  //   recording: toggle,
+  //   currTime: toggle === true ? Date.now() : null,
+  //   timeElapsed: toggle === true ? null : Date.now() - state.currTime
+  // };
 }
-
 
 function reset() {
-  return {reset: true}
+  console.log(initialState);
+  return initialState;
+}
+
+function playRecording() {
+  return {playing: true}
+}
+
+function saveRecording() {
+  return {saved: true}
 }
 
 function App() {
@@ -183,64 +175,64 @@ function App() {
 
       <div className="content">
         <div className="button-map">
-          <TransitionGroup component="div" className="buttons-pressed">
-            {state.buttonsPressed.map(entry => (
-              <Transition
-                key={entry.time}
-                timeout={500}
-                appear={true}
-                mountOnEnter
-                unmountOnExit
-              >
-                {status => {
-                  return (
-                    <div className="list-item">
-                      <b>{getButton(entry.button)}</b>
-                    </div>
-                  );
-                }}
-              </Transition>
-            ))}
-          </TransitionGroup>
-          {state.timeElapsed && ( <div
-            className="progress-bar"
-            ref={ref => {
-              console.log("wtf")
-              progressBar = ref;
-              updateProgress(progressBar, state.timeElapsed);
-            }}
-          ></div>)}
-         
+          {state.buttonsPressed && (
+            <TransitionGroup component="div" className="buttons-pressed">
+              {state.buttonsPressed.map(entry => (
+                <Transition
+                  key={entry.time}
+                  timeout={10}
+                  appear={true}
+                  mountOnEnter
+                  unmountOnExit
+                >
+                  {status => {
+                    return (
+                      <div className="list-item">
+                        <b>{getButton(entry.button)}</b>
+                      </div>
+                    );
+                  }}
+                </Transition>
+              ))}
+            </TransitionGroup>
+          )}
+
+          {state.playing && (
+            <div
+              className="progress-bar"
+              ref={ref => {
+                progressBar = ref;
+                updateProgress(progressBar, state.timeElapsed);
+              }}
+            ></div>
+          )}
         </div>
 
         <div className="action-panel">
           <div className="buttons">
-
-            {state.recording === true && (
-                            <button onClick={() => dispatch({ func: reset() })}>
-                            Reset
-                          </button>
+            {state.recording === false && state.timeElapsed && (
+              <button onClick={() => dispatch(reset())}>Reset</button>
             )}
             {state.recording === false && (
-              <button onClick={() => dispatch({ func: toggleRecording() })}>
+              <button onClick={() => dispatch(toggleRecording(state))}>
                 Record
               </button>
             )}
 
             {state.recording === true && (
-              <button onClick={() => dispatch({ func: toggleRecording() })}>
+              <button onClick={() => dispatch(toggleRecording(state))}>
                 Stop
               </button>
             )}
 
             {state.timeElapsed && (
-              <button onClick={() => dispatch({ func: toggleRecording() })}>
+              <button onClick={() => dispatch(playRecording())}>
                 Play
               </button>
             )}
 
             {state.timeElapsed && (
-              <button onClick={() => dispatch({ func: toggleRecording() })}>
+              <button onClick={() => dispatch(saveRecording())}>
                 Save
               </button>
             )}
@@ -251,7 +243,7 @@ function App() {
             onConnect={connectHandler}
             onDisconnect={disconnectHandler}
             onButtonChange={(buttonName, down) =>
-              dispatch({ func: buttonChangeHandler(buttonName, down) })
+              dispatch(buttonChangeHandler(buttonName, down, state))
             }
             onAxisChange={axisChangeHandler}
           >
