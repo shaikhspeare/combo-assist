@@ -6,7 +6,8 @@ module.exports = {
   extends: [
     'plugin:react/recommended',
     'airbnb',
-    "plugin:prettier/recommended"
+    'prettier',
+    'prettier/react'
   ],
   globals: {
     Atomics: 'readonly',
@@ -23,5 +24,6 @@ module.exports = {
     'react',
   ],
   rules: {
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
   },
 };

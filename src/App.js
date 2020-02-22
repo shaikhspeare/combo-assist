@@ -4,10 +4,8 @@ import React, { useReducer } from "react";
 import "./App.css";
 import Gamepad from "react-gamepad";
 import { TransitionGroup, Transition } from "react-transition-group";
-import { message } from "antd";
 
 import "antd/dist/antd.css";
-import anime from "animejs";
 import cross from "./images/cross.svg";
 import square from "./images/square.svg";
 import circle from "./images/circle.svg";
@@ -16,6 +14,8 @@ import right from "./images/right.svg";
 import left from "./images/left.svg";
 import up from "./images/up.svg";
 import down from "./images/down.svg";
+import ActionBar from "./components/ActionBar/ActionBar";
+import ProgressBar from "./components/ProgressBar/ProgressBar";
 
 const initialState = {
   recording: false,
@@ -25,18 +25,6 @@ const initialState = {
   currTime: null,
   timeElapsed: null
 };
-
-// let states = [
-//   {
-//     state: "initial"
-//   },
-//   {
-//     state: "recording"
-//   },
-//   {
-//     state: ""
-//   }
-// ];
 
 const buttons = {
   X: square,
@@ -98,72 +86,20 @@ function axisChangeHandler(axisName, value, previousValue) {
   console.log(axisName, value);
 }
 
-function buttonDownHandler(buttonName) {
-  console.log(buttonName, "down");
-}
+// function buttonDownHandler(buttonName) {
+//   console.log(buttonName, "down");
+// }
 
-function buttonUpHandler(buttonName) {
-  console.log(buttonName, "up");
-}
+// function buttonUpHandler(buttonName) {
+//   console.log(buttonName, "up");
+// }
 
-function updateProgress(ref, duration) {
-  const basicTimeline = anime.timeline();
-  console.log(ref);
-  basicTimeline.add({
-    targets: ".progress-bar",
-    width: "100%",
-    duration,
-    easing: "easeOutSine"
-  });
-}
 function getButton(buttonName) {
-  return <img width={"30px"} src={buttons[buttonName]} alt={buttonName} />;
-}
-
-function toggleRecording(state) {
-  if (state.recording === false) {
-    message.info("Now recording...");
-
-    return {
-      currPressed: state.currPressed,
-      buttonsPressed: state.buttonsPressed,
-      currTime: Date.now(),
-      recording: true
-    };
-  }
-  message.info("Stopped recording...");
-
-  return {
-    ...state,
-    recording: false,
-    timeElapsed: Date.now() - state.currTime
-  };
-}
-
-function reset() {
-  console.log(initialState);
-  return {
-    recording: false,
-    playing: false,
-    currPressed: {},
-    buttonsPressed: [],
-    currTime: null,
-    timeElapsed: null
-  };
-}
-
-function playRecording() {
-  return { playing: true };
-}
-
-function saveRecording() {
-  return { saved: true };
+  return <img width="30px" src={buttons[buttonName]} alt={buttonName} />;
 }
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  console.log(state);
-  let progressBar = null;
 
   return (
     <div className="main">
@@ -190,56 +126,11 @@ function App() {
               ))}
             </TransitionGroup>
           )}
-
-          {state.playing && (
-            <div
-              className="progress-bar"
-              ref={ref => {
-                progressBar = ref;
-                updateProgress(progressBar, state.timeElapsed);
-              }}
-            />
-          )}
+          {state.playing && <ProgressBar />}
         </div>
 
-        <div className="action-panel">
-          <div className="buttons">
-            {state.recording === false && state.timeElapsed && (
-              <button type="button" onClick={() => dispatch(reset())}>
-                Reset
-              </button>
-            )}
-            {state.recording === false && (
-              <button
-                type="button"
-                onClick={() => dispatch(toggleRecording(state))}
-              >
-                Record
-              </button>
-            )}
+        <ActionBar state={state} dispatch={dispatch} />
 
-            {state.recording === true && (
-              <button
-                type="button"
-                onClick={() => dispatch(toggleRecording(state))}
-              >
-                Stop
-              </button>
-            )}
-
-            {state.timeElapsed && (
-              <button type="button" onClick={() => dispatch(playRecording())}>
-                Play
-              </button>
-            )}
-
-            {state.timeElapsed && (
-              <button type="button" onClick={() => dispatch(saveRecording())}>
-                Save
-              </button>
-            )}
-          </div>
-        </div>
         {state.recording === true && (
           <Gamepad
             onConnect={connectHandler}
