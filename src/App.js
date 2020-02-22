@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable no-console */
 import React, { useReducer } from "react";
 import "./App.css";
 import Gamepad from "react-gamepad";
@@ -24,19 +26,19 @@ const initialState = {
   timeElapsed: null
 };
 
-let states = [
-  {
-    state: "initial"
-  },
-  {
-    state: "recording"
-  },
-  {
-    state: ""
-  }
-];
+// let states = [
+//   {
+//     state: "initial"
+//   },
+//   {
+//     state: "recording"
+//   },
+//   {
+//     state: ""
+//   }
+// ];
 
-let buttons = {
+const buttons = {
   X: square,
   Y: triangle,
   B: circle,
@@ -46,7 +48,6 @@ let buttons = {
   DPadLeft: left,
   DPadRight: right
 };
-
 
 function reducer(state, action) {
   console.log(action);
@@ -66,7 +67,7 @@ function disconnectHandler(gamepadIndex) {
 }
 
 function buttonChangeHandler(buttonName, down, state) {
-  let currPressed = state.currPressed;
+  const { currPressed } = state;
 
   if (currPressed[buttonName] === undefined) {
     currPressed[buttonName] = {
@@ -80,7 +81,7 @@ function buttonChangeHandler(buttonName, down, state) {
     currPressed[buttonName].timeReleased = Date.now() - state.currTime;
   }
 
-  let buttonsPressed = state.buttonsPressed;
+  const { buttonsPressed } = state;
 
   if (
     currPressed[buttonName].timeDown &&
@@ -106,9 +107,7 @@ function buttonUpHandler(buttonName) {
 }
 
 function updateProgress(ref, duration) {
-  console.log("Updating progress");
-
-  var basicTimeline = anime.timeline();
+  const basicTimeline = anime.timeline();
   console.log(ref);
   basicTimeline.add({
     targets: ".progress-bar",
@@ -118,12 +117,11 @@ function updateProgress(ref, duration) {
   });
 }
 function getButton(buttonName) {
-  return <img width={"30px"} src={buttons[buttonName]} />;
+  return <img width={"30px"} src={buttons[buttonName]} alt={buttonName} />;
 }
 
 function toggleRecording(state) {
   if (state.recording === false) {
-    console.log("Started recording");
     message.info("Now recording...");
 
     return {
@@ -132,36 +130,34 @@ function toggleRecording(state) {
       currTime: Date.now(),
       recording: true
     };
-  } else {
-    console.log("Stopped recording");
-    message.info("Stopped recording...");
-
-    return {
-      ...state,
-      recording: false,
-      timeElapsed: Date.now() - state.currTime
-    };
   }
+  message.info("Stopped recording...");
 
-  // return {
-  //   ...state,
-  //   recording: toggle,
-  //   currTime: toggle === true ? Date.now() : null,
-  //   timeElapsed: toggle === true ? null : Date.now() - state.currTime
-  // };
+  return {
+    ...state,
+    recording: false,
+    timeElapsed: Date.now() - state.currTime
+  };
 }
 
 function reset() {
   console.log(initialState);
-  return initialState;
+  return {
+    recording: false,
+    playing: false,
+    currPressed: {},
+    buttonsPressed: [],
+    currTime: null,
+    timeElapsed: null
+  };
 }
 
 function playRecording() {
-  return {playing: true}
+  return { playing: true };
 }
 
 function saveRecording() {
-  return {saved: true}
+  return { saved: true };
 }
 
 function App() {
@@ -171,7 +167,7 @@ function App() {
 
   return (
     <div className="main">
-      <div className="bg-image"></div>
+      <div className="bg-image" />
 
       <div className="content">
         <div className="button-map">
@@ -181,17 +177,15 @@ function App() {
                 <Transition
                   key={entry.time}
                   timeout={10}
-                  appear={true}
+                  appear
                   mountOnEnter
                   unmountOnExit
                 >
-                  {status => {
-                    return (
-                      <div className="list-item">
-                        <b>{getButton(entry.button)}</b>
-                      </div>
-                    );
-                  }}
+                  {() => (
+                    <div className="list-item">
+                      <b>{getButton(entry.button)}</b>
+                    </div>
+                  )}
                 </Transition>
               ))}
             </TransitionGroup>
@@ -204,41 +198,49 @@ function App() {
                 progressBar = ref;
                 updateProgress(progressBar, state.timeElapsed);
               }}
-            ></div>
+            />
           )}
         </div>
 
         <div className="action-panel">
           <div className="buttons">
             {state.recording === false && state.timeElapsed && (
-              <button onClick={() => dispatch(reset())}>Reset</button>
+              <button type="button" onClick={() => dispatch(reset())}>
+                Reset
+              </button>
             )}
             {state.recording === false && (
-              <button onClick={() => dispatch(toggleRecording(state))}>
+              <button
+                type="button"
+                onClick={() => dispatch(toggleRecording(state))}
+              >
                 Record
               </button>
             )}
 
             {state.recording === true && (
-              <button onClick={() => dispatch(toggleRecording(state))}>
+              <button
+                type="button"
+                onClick={() => dispatch(toggleRecording(state))}
+              >
                 Stop
               </button>
             )}
 
             {state.timeElapsed && (
-              <button onClick={() => dispatch(playRecording())}>
+              <button type="button" onClick={() => dispatch(playRecording())}>
                 Play
               </button>
             )}
 
             {state.timeElapsed && (
-              <button onClick={() => dispatch(saveRecording())}>
+              <button type="button" onClick={() => dispatch(saveRecording())}>
                 Save
               </button>
             )}
           </div>
         </div>
-        {state.recording == true && (
+        {state.recording === true && (
           <Gamepad
             onConnect={connectHandler}
             onDisconnect={disconnectHandler}
@@ -247,7 +249,7 @@ function App() {
             }
             onAxisChange={axisChangeHandler}
           >
-            <React.Fragment />
+            <></>
           </Gamepad>
         )}
       </div>
