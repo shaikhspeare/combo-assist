@@ -1,14 +1,14 @@
-import React from "react";
-import PropTypes from "prop-types";
-import anime from "animejs";
+import React from 'react';
+import PropTypes from 'prop-types';
+import anime from 'animejs';
 
 function updateProgress(ref, duration) {
   const basicTimeline = anime.timeline();
   basicTimeline.add({
-    targets: ".progress-bar",
-    width: "100%",
+    targets: '.progress-bar',
+    width: '100%',
     duration,
-    easing: "linear"
+    easing: 'linear',
   });
 }
 
@@ -28,11 +28,11 @@ const ProgressBar = props => {
 };
 
 ProgressBar.propTypes = {
-  state: PropTypes.shape
+  state: PropTypes.shape,
 };
 
 ProgressBar.defaultProps = {
-  state: {}
+  state: {},
 };
 
 export default ProgressBar;

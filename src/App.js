@@ -3,19 +3,10 @@
 import React, { useReducer } from "react";
 import "./App.css";
 import Gamepad from "react-gamepad";
-import { TransitionGroup, Transition } from "react-transition-group";
-
 import "antd/dist/antd.css";
-import cross from "./images/cross.svg";
-import square from "./images/square.svg";
-import circle from "./images/circle.svg";
-import triangle from "./images/triangle.svg";
-import right from "./images/right.svg";
-import left from "./images/left.svg";
-import up from "./images/up.svg";
-import down from "./images/down.svg";
 import ActionBar from "./components/ActionBar/ActionBar";
-import ProgressBar from "./components/ProgressBar/ProgressBar";
+import ButtonMap from "./components/ButtonMap/ButtonMap";
+import ComboName from "./components/ComboName/ComboName";
 
 const initialState = {
   recording: false,
@@ -24,17 +15,6 @@ const initialState = {
   buttonsPressed: [],
   currTime: null,
   timeElapsed: null
-};
-
-const buttons = {
-  X: square,
-  Y: triangle,
-  B: circle,
-  A: cross,
-  DPadDown: down,
-  DPadUp: up,
-  DPadLeft: left,
-  DPadRight: right
 };
 
 function reducer(state, action) {
@@ -55,7 +35,7 @@ function disconnectHandler(gamepadIndex) {
 }
 
 function buttonChangeHandler(buttonName, down, state) {
-  const { currPressed } = state;
+  const { currPressed, buttonsPressed } = state;
 
   if (currPressed[buttonName] === undefined) {
     currPressed[buttonName] = {
@@ -68,8 +48,6 @@ function buttonChangeHandler(buttonName, down, state) {
   } else {
     currPressed[buttonName].timeReleased = Date.now() - state.currTime;
   }
-
-  const { buttonsPressed } = state;
 
   if (
     currPressed[buttonName].timeDown &&
@@ -94,10 +72,6 @@ function axisChangeHandler(axisName, value, previousValue) {
 //   console.log(buttonName, "up");
 // }
 
-function getButton(buttonName) {
-  return <img width="30px" src={buttons[buttonName]} alt={buttonName} />;
-}
-
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -106,28 +80,8 @@ function App() {
       <div className="bg-image" />
 
       <div className="content">
-        <div className="button-map">
-          {state.buttonsPressed && (
-            <TransitionGroup component="div" className="buttons-pressed">
-              {state.buttonsPressed.map(entry => (
-                <Transition
-                  key={entry.time}
-                  timeout={10}
-                  appear
-                  mountOnEnter
-                  unmountOnExit
-                >
-                  {() => (
-                    <div className="list-item">
-                      <b>{getButton(entry.button)}</b>
-                    </div>
-                  )}
-                </Transition>
-              ))}
-            </TransitionGroup>
-          )}
-          {state.playing && <ProgressBar />}
-        </div>
+        <ComboName state={state} />
+        <ButtonMap state={state} />
 
         <ActionBar state={state} dispatch={dispatch} />
 

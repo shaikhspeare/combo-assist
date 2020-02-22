@@ -1,0 +1,28 @@
+.nameContainer {
+  position: relative;
+  width: 90vw;
+  height: 10vh;
+  background-color: #4db6ac;
+  margin: 0 auto;
+  margin-top: 50px;
+  box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
+  font-size: 24px;
+}
+
+.comboInput {
+    padding: 20px;
+    margin: 20px;
+    background-color: transparent;
+    border: 0px;
+    outline: 0px;
+    font-size: 24px;
+    font-family: 'Oswald';
+    font-style: italic;
+    text-transform: uppercase;
+    color: white;
+}
+
+.comboInput:focus {
+    outline: 0px;
+    border: 0px;
+}
