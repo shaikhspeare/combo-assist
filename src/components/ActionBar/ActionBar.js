@@ -1,6 +1,7 @@
 import React from "react";
 import { message } from "antd";
 import PropTypes from "prop-types";
+import './ActionBar.css';
 
 /**
  * toggleRecording() toggles true or false between recordings

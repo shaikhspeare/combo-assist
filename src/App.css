@@ -33,7 +33,7 @@ body, html {
   position: fixed;
   left: 0;
   right: 0;
-  z-index: 9999;
+  z-index: 1;
   margin-left: 20px;
   margin-right: 20px;
 }
@@ -44,9 +44,9 @@ body, html {
   position: relative;
   width: 90vw;
   height: 30vh;
-  background-color: #4DB6AC;
+  background-color: #333333;
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: 30px;
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
   font-size: 24px;
 
@@ -61,35 +61,6 @@ body, html {
   display: inline-block;
   margin-left: 10px; 
   color: white;
-
-}
-
-.action-panel {
-  display: flex;
-  width: 90vw;
-  margin: 0 auto;
-  margin-top: 20px;
-  height: 60px;
-  justify-content: left;
-  align-items: flex-start;
-}
-
-
-.buttons button {  
-  font-family: 'Oswald';
-  letter-spacing: 0.1em;
-  margin-left: 5px;
-  font-size: 24px;
-  background-color: #d0011b;
-  color: white;
-  text-transform: uppercase;
-  font-weight: bolder;
-  border: 0px;
-  outline: 0px;
-  cursor: pointer;
-  padding: 10px;
-  width: 200px;
-  margin-top: 20px;
 
 }
 

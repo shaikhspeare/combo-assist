@@ -4,14 +4,25 @@ import React, { useReducer } from "react";
 import "./App.css";
 import Gamepad from "react-gamepad";
 import "antd/dist/antd.css";
+import { message } from "antd";
 import ActionBar from "./components/ActionBar/ActionBar";
 import ButtonMap from "./components/ButtonMap/ButtonMap";
 import ComboName from "./components/ComboName/ComboName";
 
+/**
+ * recording: Is tool currently recording
+ * playing: Is tool currently playing
+ * currPressed: Buttons currently pressed and have not been released yet
+ * intermediaryButtons: Buttons that have recently been pressed and released due to be pushed into buttonsPressed
+ * buttonsPressed: Buttons that have been pressed and released
+ * currTime: Current length of the recording
+ * timeElapsed: Total length of the recording
+ */
 const initialState = {
   recording: false,
   playing: false,
   currPressed: {},
+  intermediaryButtons: {},
   buttonsPressed: [],
   currTime: null,
   timeElapsed: null
@@ -27,6 +38,7 @@ function reducer(state, action) {
 }
 
 function connectHandler(gamepadIndex) {
+  message.info("Controller has been connected");
   console.log(`Gamepad ${gamepadIndex} connected !`);
 }
 
@@ -34,43 +46,28 @@ function disconnectHandler(gamepadIndex) {
   console.log(`Gamepad ${gamepadIndex} disconnected !`);
 }
 
-function buttonChangeHandler(buttonName, down, state) {
-  const { currPressed, buttonsPressed } = state;
-
+function buttonDownHandler(buttonName, state) {
+  const { currPressed } = state;
   if (currPressed[buttonName] === undefined) {
     currPressed[buttonName] = {
       button: buttonName
     };
   }
+  currPressed[buttonName].timeDown = Date.now() - state.currTime;
 
-  if (down === true) {
-    currPressed[buttonName].timeDown = Date.now() - state.currTime;
-  } else {
-    currPressed[buttonName].timeReleased = Date.now() - state.currTime;
-  }
+  return { currPressed };
+}
 
-  if (
-    currPressed[buttonName].timeDown &&
-    currPressed[buttonName].timeReleased
-  ) {
-    buttonsPressed.push(currPressed[buttonName]);
+function buttonUpHandler(buttonName, state) {
+  const { currPressed, intermediaryButtons } = state;
+  const currButton = currPressed[buttonName];
+  currButton.timeReleased = Date.now() - state.currTime;
+  if (currButton.timeDown && currButton.timeReleased) {
+    intermediaryButtons[buttonName] = currButton;
     delete currPressed[buttonName];
   }
-
-  return { currPressed, buttonsPressed };
+  return { currPressed, intermediaryButtons };
 }
-
-function axisChangeHandler(axisName, value, previousValue) {
-  console.log(axisName, value);
-}
-
-// function buttonDownHandler(buttonName) {
-//   console.log(buttonName, "down");
-// }
-
-// function buttonUpHandler(buttonName) {
-//   console.log(buttonName, "up");
-// }
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -89,10 +86,12 @@ function App() {
           <Gamepad
             onConnect={connectHandler}
             onDisconnect={disconnectHandler}
-            onButtonChange={(buttonName, down) =>
-              dispatch(buttonChangeHandler(buttonName, down, state))
+            onButtonDown={buttonName =>
+              dispatch(buttonDownHandler(buttonName, state))
             }
-            onAxisChange={axisChangeHandler}
+            onButtonUp={buttonName =>
+              dispatch(buttonUpHandler(buttonName, state))
+            }
           >
             <></>
           </Gamepad>

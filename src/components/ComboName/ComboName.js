@@ -1,20 +1,13 @@
-import React from 'react'
-import { Input } from 'antd';
-import './ComboName.css'
-import PropTypes from 'prop-types'
+import React from "react";
+import { Input } from "antd";
+import "./ComboName.css";
 
 function ComboName(props) {
-    const {state} = props;
-    return (
-        <div className="nameContainer">
-            <Input className="comboInput" placeholder="Enter combo name" />
-        </div>
-    )
+  return (
+    <div className="nameContainer">
+      <Input className="comboInput" placeholder="Enter combo name" />
+    </div>
+  );
 }
 
-ComboName.propTypes = {
-
-}
-
-export default ComboName
-
+export default ComboName;
