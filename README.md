@@ -13,6 +13,8 @@ npm start
 To create a combo, hit record and begin entering the sequence of strings using your controller or keyboard. If nothing is happening, open the key bindings dialog to bind your inputs.
 If you're satisfied with the combo you can save it. Otherwise, you can reset and try again.
 
+# Example
+![Example](exampleCombo.png "Example Combo")
 
 # Questions
 * How do I synchronise the timing of the combos without the game running?
