@@ -7,23 +7,23 @@ import up from "./images/up.svg";
 import downButton from "./images/down.svg";
 import circle from "./images/circle.svg";
 import square from "./images/square.svg";
-import cross from "./images/square.svg";
+import cross from "./images/cross.svg";
 import triangle from "./images/triangle.svg";
 import ProgressBar from "../ProgressBar/ProgressBar";
 
-const buttons = {
-  X: square,
-  Y: triangle,
-  B: circle,
-  A: cross,
-  DPadDown: downButton,
-  DPadUp: up,
-  DPadLeft: left,
-  DPadRight: right
+export const buttons = {
+  X: {img: square, PC: 'A'},
+  Y: {img: triangle, PC: 'B'},
+  B: {img: circle, PC: 'C'},
+  A: {img: cross, PC: 'D'},
+  DPadUp: {img: up, PC: 'up'},
+  DPadRight: {img: right, PC: 'right'},
+  DPadDown: {img: downButton, PC: 'down'},
+  DPadLeft: {img: left, PC: 'left'}
 };
 
-function getButton(buttonName) {
-  return <img width="30px" src={buttons[buttonName]} alt={buttonName} />;
+export function getButton(buttonName) {
+  return <img width="30px" src={buttons[buttonName].img} alt={buttonName} />;
 }
 
 function ButtonMap(props) {

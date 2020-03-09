@@ -1,6 +1,6 @@
-import React from "react";
-import { message } from "antd";
-import PropTypes from "prop-types";
+import React from 'react';
+import { message } from 'antd';
+import PropTypes from 'prop-types';
 import './ActionBar.css';
 
 /**
@@ -9,21 +9,21 @@ import './ActionBar.css';
  */
 function toggleRecording(state) {
   if (state.recording === false) {
-    message.info("Now recording...");
+    message.info('Now recording...');
 
     return {
       currPressed: state.currPressed,
       buttonsPressed: state.buttonsPressed,
       currTime: Date.now(),
-      recording: true
+      recording: true,
     };
   }
-  message.info("Stopped recording...");
+  message.info('Stopped recording...');
 
   return {
     ...state,
     recording: false,
-    timeElapsed: Date.now() - state.currTime
+    timeElapsed: Date.now() - state.currTime,
   };
 }
 
@@ -35,6 +35,10 @@ function saveRecording() {
   return { saved: true };
 }
 
+function openBindings() {
+  return { bindingIsOpen: true}
+}
+
 function reset() {
   return {
     recording: false,
@@ -42,12 +46,13 @@ function reset() {
     currPressed: {},
     buttonsPressed: [],
     currTime: null,
-    timeElapsed: null
+    timeElapsed: null,
   };
 }
 
 function ActionBar(props) {
   const { state, dispatch } = props;
+ 
 
   return (
     <div className="action-panel">
@@ -58,19 +63,13 @@ function ActionBar(props) {
           </button>
         )}
         {state.recording === false && (
-          <button
-            type="button"
-            onClick={() => dispatch(toggleRecording(state))}
-          >
+          <button type="button" onClick={() => dispatch(toggleRecording(state))}>
             Record
           </button>
         )}
 
         {state.recording === true && (
-          <button
-            type="button"
-            onClick={() => dispatch(toggleRecording(state))}
-          >
+          <button type="button" onClick={() => dispatch(toggleRecording(state))}>
             Stop
           </button>
         )}
@@ -86,19 +85,27 @@ function ActionBar(props) {
             Save
           </button>
         )}
+
+        {state.recording === false && (
+          <button type="button" onClick={() => dispatch(openBindings())}>
+          Bindings
+          </button>
+        )}
+
       </div>
+    
     </div>
   );
 }
 
 ActionBar.propTypes = {
   state: PropTypes.shape,
-  dispatch: PropTypes.func
+  dispatch: PropTypes.func,
 };
 
 ActionBar.defaultProps = {
   state: {},
-  dispatch: {}
+  dispatch: {},
 };
 
 export default ActionBar;

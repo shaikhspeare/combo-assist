@@ -72,3 +72,52 @@ body, html {
   width: 40px;
   height: 4px;
 }
+
+.Modal {
+  position: absolute;
+
+  font-size: 48px;
+  background-color: rgba(38,50,56 ,1);
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  padding: 20px;
+}
+
+.bindings-header {
+  font-size: 24px;
+  color: white;
+}
+
+.controller-buttons {
+  color: white;
+  width: 540px;
+  height: 540px;
+  font-size: 24px;
+}
+
+.controller-buttons ul { 
+  list-style: none;
+  padding-left: 0px;
+}
+
+
+.controller-buttons button {
+  height: 40px;
+  margin-bottom: 10px;
+  margin-right: 20px;
+  cursor: pointer;
+  background-color: rgba(69,90,100 ,0.5);
+  border-radius: 15px;
+  border: none;
+
+}
+
+.controller-buttons button:hover {
+  background-color: rgba(69,90,100 ,1);
+
+}
+
+.mode-select {
+  display: block;
+  width: 400px;
+  height: 400px;
+}

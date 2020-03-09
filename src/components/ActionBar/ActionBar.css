@@ -34,3 +34,7 @@
       background-color: rgb(236, 3, 34);
       transition: 0.2s;
   }
+
+  .bindings {
+    z-index: 2;
+  }
