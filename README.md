@@ -14,7 +14,7 @@ To create a combo, hit record and begin entering the sequence of strings using y
 If you're satisfied with the combo you can save it. Otherwise, you can reset and try again.
 
 # Example
-![Example](exampleCombo.png "Example Combo")
+![Example](https://github.com/pakiKanga/combo-assist/blob/master/exampleCombo.PNG "Example Combo")
 
 # Questions
 * How do I synchronise the timing of the combos without the game running?
