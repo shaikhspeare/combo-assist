@@ -27,10 +27,11 @@ export function getButton(buttonName) {
 }
 
 function ButtonMap(props) {
-  const { state } = props;
+  const { head } = props;
+  head.getButtons();
   return (
     <div className="button-map">
-      {state.buttonsPressed && (
+      {/* {state.buttonsPressed && (
         <TransitionGroup component="div" className="buttons-pressed">
           {state.buttonsPressed.map(entry => (
             <Transition
@@ -49,18 +50,18 @@ function ButtonMap(props) {
           ))}
         </TransitionGroup>
       )}
-              {state.playing && <ProgressBar state={state} /> }
+              {state.playing && <ProgressBar state={state} /> } */}
 
     </div>
   );
 }
 
 ButtonMap.propTypes = {
-  state: PropTypes.shape
+  head: PropTypes.shape
 };
 
 ButtonMap.defaultProps = {
-  state: {}
+  head: {}
 };
 
 export default ButtonMap;

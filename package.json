@@ -13,8 +13,10 @@
     "react-gamepad": "SBRK/react-gamepad",
     "react-modal": "^3.11.2",
     "react-scripts": "3.3.0",
+    "react-three-fiber": "^4.2.8",
     "react-transition-group": "^4.3.0",
-    "rxjs": "^6.5.4"
+    "rxjs": "^6.5.4",
+    "three": "^0.117.1"
   },
   "scripts": {
     "start": "react-scripts start",

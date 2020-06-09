@@ -9,6 +9,7 @@ import Modal from 'react-modal';
 import ActionBar from './components/ActionBar/ActionBar';
 import ButtonMap, { getButton, buttons } from './components/ButtonMap/ButtonMap';
 import ComboName from './components/ComboName/ComboName';
+import Button from './utils/ButtonLinks';
 
 /**
  * recording: Is tool currently recording
@@ -49,29 +50,7 @@ function disconnectHandler(gamepadIndex) {
   console.log(`Gamepad ${gamepadIndex} disconnected !`);
 }
 
-function buttonDownHandler(buttonName, state) {
-  const { currPressed } = state;
-  if (currPressed[buttonName] === undefined) {
-    currPressed[buttonName] = {
-      button: buttonName,
-    };
-  }
-  currPressed[buttonName].timeDown = Date.now() - state.currTime;
 
-  return { currPressed };
-}
-
-function buttonUpHandler(buttonName, state) {
-  const { currPressed, intermediaryButtons, buttonsPressed } = state;
-  const currButton = currPressed[buttonName];
-  currButton.timeReleased = Date.now() - state.currTime;
-  if (currButton.timeDown && currButton.timeReleased) {
-    intermediaryButtons[buttonName] = currButton;
-    buttonsPressed.push(currButton);
-    delete currPressed[buttonName];
-  }
-  return { currPressed, intermediaryButtons };
-}
 
 function closeModal() {
   return { bindingIsOpen: false };
@@ -98,6 +77,9 @@ function App() {
     },
   };
 
+  const head = new Button(null, null, null);
+  
+  
   return (
     <>
       <div className="main">
@@ -105,16 +87,16 @@ function App() {
 
         <div className="content">
           <ComboName state={state} />
-          <ButtonMap state={state} />
-
+          <ButtonMap head={head} />
+          
           <ActionBar state={state} dispatch={dispatch} />
 
           {state.recording === true && state.inputMode === 'controller' && (
             <Gamepad
               onConnect={connectHandler}
               onDisconnect={disconnectHandler}
-              onButtonDown={buttonName => dispatch(buttonDownHandler(buttonName, state))}
-              onButtonUp={buttonName => dispatch(buttonUpHandler(buttonName, state))}
+              onButtonDown={buttonName => dispatch(Button.buttonDownHandler(buttonName, state))}
+              onButtonUp={buttonName => dispatch(Button.buttonUpHandler(buttonName, state, head))}
             >
               <></>
             </Gamepad>
