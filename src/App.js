@@ -1,17 +1,22 @@
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable no-console */
-import React, { useReducer } from 'react';
+import React, { useReducer, useEffect, useState, useRef, useMemo } from 'react';
 import './App.css';
 import Gamepad from 'react-gamepad';
 import 'antd/dist/antd.css';
 import { message, Radio } from 'antd';
 import Modal from 'react-modal';
-import { Canvas, useFrame } from 'react-three-fiber'
+import { Canvas, useFrame } from 'react-three-fiber';
+import { TextureLoader, Box3Helper, Clock } from 'three';
 import ActionBar from './components/ActionBar/ActionBar';
-import ButtonMap, { getButton, buttons } from './components/ButtonMap/ButtonMap';
+// import ButtonMap, { getButton, buttons } from './components/ButtonMap/ButtonMap';
 import ComboName from './components/ComboName/ComboName';
 import Button from './utils/ButtonLinks';
-import Box from './models/Box.js'
+import Box from './models/Box.js';
+import ButtonFactory from './ButtonFactory';
+import Helpers from './Helpers'
+import TimerBar from './TimerBar'
+import KeyboardListener from './KeyboardListener';
 
 /**
  * recording: Is tool currently recording
@@ -61,31 +66,55 @@ function setInputMode(event) {
 }
 
 function setPCBinding(button) {}
+
+function buttonUpHandler(buttonName, state) {
+  console.log(buttonName);
+}
+
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const customStyles = {
-    content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-    },
-    overlay: {
-      zIndex: 100,
-    },
-  };
+  const [buttonList, setButtonList] = useState([]);
+  const factory = new ButtonFactory();
+  const startDate = useMemo(() => Date.now(), []);
 
-  const head = new Button(null, null, null);
+  function buttonDownHandler(buttonName) {
+    console.log('Button presed', buttonName, startDate);
+    const newButton = factory.create({
+      button: buttonName,
+      time: Date.now() - startDate,
+    });
+
+    const currList = buttonList;
+    currList.push(newButton);
+    setButtonList(currList);
+  }
+
+  console.log(buttonList);
 
   return (
     <>
-      <Canvas>
+      <Gamepad
+        onConnect={connectHandler}
+        onDisconnect={disconnectHandler}
+        onButtonDown={(buttonName) => dispatch(buttonDownHandler(buttonName, state))}
+        onButtonUp={(buttonName) => dispatch(buttonUpHandler(buttonName, state))}
+      >
+        <></>
+      </Gamepad>
+      <KeyboardListener
+              onButtonDown={(buttonName) => dispatch(buttonDownHandler(buttonName, state))}
+              onButtonUp={(buttonName) => dispatch(buttonUpHandler(buttonName, state))} />
+        <ActionBar state={state} dispatch={dispatch} />
+      <Canvas
+        style={{ height: "80vh", width: window.innerWidth,  background: 'radial-gradient(at 50% 60%, #873740 0%, #272730 40%, #171720 80%, #070710 100%)'  }}
+        className="usoCanvas"        
+      >
+        <Helpers />
+        {/* <axesHelper /> */}
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
-        <Box position={[-1.2, 0, 0]} />
-        <Box position={[1.2, 0, 0]} />
+        {/* <group position={[0, 0, 0]}>{buttonList}</group> */}
+        <TimerBar time={Date.now() - startDate} />
       </Canvas>
     </>
   );

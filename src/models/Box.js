@@ -1,39 +1,28 @@
 import ReactDOM from 'react-dom';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo} from 'react';
 import { Canvas, useFrame } from 'react-three-fiber';
-import { Clock, ArrowHelper, Mesh } from 'three';
+import { Clock, ArrowHelper, Mesh, TextureLoader } from 'three';
+import circle from '../images/circle.svg'
 
 function Box(props) {
   // This reference will give us direct access to the mesh
   const mesh = useRef();
 
-  // Set up state for the hovered and active state
-  const [hovered, setHover] = useState(false);
-  const [active, setActive] = useState(false);
-  const clock = new Clock()
-  clock.start()
-  const triangleButton = new Mesh()
-  useEffect(() => {
-      console.log(clock.elapsedTime)
-  }, [clock.elapsedTime])
-
   // Rotate mesh every frame, this is outside of React without overhead
-  useFrame(() => (mesh.current.rotation.x = mesh.current.rotation.y += 0.01));
+  const texture = useMemo(() => new TextureLoader().load(circle), [circle])
 
   return (
     <mesh
-      {...props}
       ref={mesh}
-      scale={active ? [1.5, 1.5, 1.5] : [1, 1, 1]}
-      onClick={(e) => setActive(!active)}
-      onPointerOver={(e) => setHover(true)}
-      onPointerOut={(e) => setHover(false)}
+      scale={[1, 1, 1]}
+
     >
-      <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
-      <meshStandardMaterial attach="material"  color={hovered ? 'hotpink' : 'orange'} />
+      <planeBufferGeometry attach="geometry" args={[5, 5]} />
+      <meshLambertMaterial attach="material" transparent opacity={1}>
+        <primitive attach="map" object={texture} />
+      </meshLambertMaterial>
+    </mesh>      
       
-      
-    </mesh>
   );
 }
 

@@ -2,10 +2,9 @@
     display: flex;
     width: 90vw;
     margin: 0 auto;
-    margin-top: 20px;
-    height: 60px;
     justify-content: left;
     align-items: flex-start;
+    padding: 10px 0px;
   }
   
   
@@ -23,7 +22,6 @@
     cursor: pointer;
     padding: 10px;
     width: 200px;
-    margin-top: 20px;
   
   }
 
