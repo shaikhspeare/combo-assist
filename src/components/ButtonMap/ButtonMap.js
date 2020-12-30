@@ -51,6 +51,7 @@ function ButtonMap(props) {
         </TransitionGroup>
       )}
               {state.playing && <ProgressBar state={state} /> } */}
+              {props.children}
 
     </div>
   );

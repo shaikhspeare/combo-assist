@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable no-console */
-import React, { useReducer } from 'react';
+import React, { useReducer, useEffect, useState, useRef } from 'react';
 import './App.css';
 import Gamepad from 'react-gamepad';
 import 'antd/dist/antd.css';
@@ -50,19 +50,54 @@ function disconnectHandler(gamepadIndex) {
   console.log(`Gamepad ${gamepadIndex} disconnected !`);
 }
 
-
-
 function closeModal() {
   return { bindingIsOpen: false };
 }
 
 function setInputMode(event) {
-  return { inputMode: event.target.value}
+  return { inputMode: event.target.value };
 }
 
 function setPCBinding(button) {}
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [startTime, setStartTime] = useState(0);
+  const requestRef = useRef();
+  function draw() {
+    const ctx = document.getElementById('canvas').getContext('2d');
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight); // clear canvas
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+    ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
+    ctx.fillRect(0, 0, (Date.now() - startTime) / 60, 150); // Shadow
+
+    ctx.save();
+    
+    console.log('Elapsed time', Date.now() - startTime, startTime);
+    requestRef.current = window.requestAnimationFrame(draw);
+  }
+
+  useEffect(() => {
+    document.getElementById("canvas").style.width = "100%";
+    document.getElementById("canvas").style.height = "100%";
+  }, []);
+
+  useEffect(() => {
+    console.log("REC", state.recording)
+    if (state.recording) {
+        setStartTime(Date.now())
+    } else {
+        window.cancelAnimationFrame(requestRef.current);
+    }
+  }, [state.recording])
+
+  useEffect(() => {
+      if (startTime !== 0) {
+        requestRef.current = window.requestAnimationFrame(draw);
+      }
+  }, [startTime])
+
   const customStyles = {
     content: {
       top: '50%',
@@ -78,8 +113,7 @@ function App() {
   };
 
   const head = new Button(null, null, null);
-  
-  
+
   return (
     <>
       <div className="main">
@@ -87,7 +121,9 @@ function App() {
 
         <div className="content">
           <ComboName state={state} />
-          <ButtonMap head={head} />
+          <ButtonMap head={head}>
+            <canvas id="canvas" />
+          </ButtonMap>
           
           <ActionBar state={state} dispatch={dispatch} />
 
@@ -95,8 +131,8 @@ function App() {
             <Gamepad
               onConnect={connectHandler}
               onDisconnect={disconnectHandler}
-              onButtonDown={buttonName => dispatch(Button.buttonDownHandler(buttonName, state))}
-              onButtonUp={buttonName => dispatch(Button.buttonUpHandler(buttonName, state, head))}
+              onButtonDown={(buttonName) => dispatch(Button.buttonDownHandler(buttonName, state))}
+              onButtonUp={(buttonName) => dispatch(Button.buttonUpHandler(buttonName, state, head))}
             >
               <></>
             </Gamepad>
@@ -115,7 +151,7 @@ function App() {
 
         <div className="controller-buttons">
           <ul className="button-list">
-            {Object.keys(buttons).map(button => (
+            {Object.keys(buttons).map((button) => (
               <li>
                 <button type="button" onClick={() => dispatch(setPCBinding(button))}>
                   {getButton(button)}
@@ -125,7 +161,11 @@ function App() {
             ))}
           </ul>
           <div className="mode-select">
-            <Radio.Group onChange={(change) => dispatch(setInputMode(change))} defaultValue={state.inputMode} buttonStyle="solid">
+            <Radio.Group
+              onChange={(change) => dispatch(setInputMode(change))}
+              defaultValue={state.inputMode}
+              buttonStyle="solid"
+            >
               <Radio.Button value="controller">Controller</Radio.Button>
               <Radio.Button value="PC">PC</Radio.Button>
             </Radio.Group>
