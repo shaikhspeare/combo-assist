@@ -10,44 +10,34 @@ export default class Button {
   }
 
   pushButton(button) {
-    console.log("Pushing", button);
+    console.log('Pushing', button);
     this.next = button;
     this.next.prev = this;
   }
 
   getButtons() {
-      let runner = this;
-      while (runner != null) {
-          console.log(this.button);
-          runner = runner.next;
-      }
+    let runner = this;
+    while (runner != null) {
+      console.log(this.button);
+      runner = runner.next;
+    }
   }
 
   static buttonDownHandler(buttonName, state) {
-    const { currPressed } = state;
-    if (currPressed[buttonName] === undefined) {
-      currPressed[buttonName] = {
-        button: buttonName,
-      };
-         }
-    currPressed[buttonName].timeDown = Date.now() - state.currTime;
+    console.log('Down', buttonName);
+    this.button = buttonName;
+    this.timeDown = Date.now() - state.currTime;
 
-    return { currPressed };
+    return 1;
   }
 
-  static buttonUpHandler(buttonName, state, runner) {
-    const { currPressed } = state;
-    const currButton = currPressed[buttonName];
-
-    if (currButton.timeDown) {
+  static buttonUpHandler(buttonName, state) {
+    console.log('Up', this.timeDown);
+    if (this.timeDown) {
       const timeReleased = Date.now() - state.currTime;
-      const {timeDown} = currButton;
-      const newButton = new Button(buttonName, timeDown, timeReleased);
-      runner.pushButton(newButton);
-      delete currPressed[buttonName];
+      const newButton = new Button(buttonName, this.timeDown, timeReleased);
+      return { newButton };
     }
-
-    return { currPressed };
+    return null;
   }
 }
-

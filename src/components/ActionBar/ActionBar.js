@@ -98,10 +98,6 @@ function ActionBar(props) {
   );
 }
 
-ActionBar.propTypes = {
-  state: PropTypes.shape,
-  dispatch: PropTypes.func,
-};
 
 ActionBar.defaultProps = {
   state: {},

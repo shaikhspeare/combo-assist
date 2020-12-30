@@ -34,11 +34,17 @@ const initialState = {
 
 function reducer(state, action) {
   console.log(action);
-
+  if (action.newButton) {
+      return {
+          ...state,
+          buttonsPressed: [...state.buttonsPressed, action.newButton]
+      }
+  } 
   return {
     ...state,
     ...action,
   };
+
 }
 
 function connectHandler(gamepadIndex) {
@@ -74,7 +80,6 @@ function App() {
 
     ctx.save();
     
-    console.log('Elapsed time', Date.now() - startTime, startTime);
     requestRef.current = window.requestAnimationFrame(draw);
   }
 
@@ -84,7 +89,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log("REC", state.recording)
     if (state.recording) {
         setStartTime(Date.now())
     } else {
@@ -121,8 +125,8 @@ function App() {
 
         <div className="content">
           <ComboName state={state} />
-          <ButtonMap head={head}>
-            <canvas id="canvas" />
+          <ButtonMap state={state} head={head}>
+            <canvas id="canvas" style={{position: 'absolute', top: 0, left: 0}}/>
           </ButtonMap>
           
           <ActionBar state={state} dispatch={dispatch} />
@@ -131,8 +135,8 @@ function App() {
             <Gamepad
               onConnect={connectHandler}
               onDisconnect={disconnectHandler}
-              onButtonDown={(buttonName) => dispatch(Button.buttonDownHandler(buttonName, state))}
-              onButtonUp={(buttonName) => dispatch(Button.buttonUpHandler(buttonName, state, head))}
+              onButtonDown={(buttonName) => Button.buttonDownHandler(buttonName, state)}
+              onButtonUp={(buttonName) => dispatch(Button.buttonUpHandler(buttonName, state))}
             >
               <></>
             </Gamepad>
