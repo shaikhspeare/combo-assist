@@ -180,9 +180,15 @@ function App() {
   return (
     <>
       <div className="main">
+
         <div className="bg-image" />
 
         <div className="content">
+        <div className="header">
+          <h1>Combot</h1>
+          <span>This tool lets you create your own combos and replay them in real-time! <br />
+          You can soon also share these combos with other people.</span>
+        </div>
           <ComboName state={state} />
           <canvas
             ref={canvasRef}
@@ -235,7 +241,7 @@ function App() {
           <ul className="button-list">
             {Object.keys(buttons).map((button) => (
               <li>
-                <button type="button" onClick={() => dispatch(setPCBinding(button))}>
+                <button type="button" onClick={() => console.log('hey')}>
                   {getButton(button)}
                 </button>
                 {buttons[button].PC}

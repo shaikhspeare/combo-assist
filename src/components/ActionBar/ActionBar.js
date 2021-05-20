@@ -12,6 +12,7 @@ function toggleRecording(state) {
     message.info('Now recording...');
 
     return {
+      ...state,
       currPressed: state.currPressed,
       buttonsPressed: state.buttonsPressed,
       currTime: Date.now(),
@@ -27,20 +28,21 @@ function toggleRecording(state) {
   };
 }
 
-function playRecording() {
-  return { playing: true };
+function playRecording(state) {
+  return { ...state, playing: true };
 }
 
-function saveRecording() {
-  return { saved: true };
+function saveRecording(state) {
+  return { ...state, saved: true };
 }
 
-function openBindings() {
-  return { bindingIsOpen: true}
+function openBindings(state) {
+  return { ...state, bindingIsOpen: true}
 }
 
-function reset() {
+function reset(state) {
   return {
+    ...state, 
     recording: false,
     playing: false,
     currPressed: {},
@@ -52,14 +54,14 @@ function reset() {
 
 function ActionBar(props) {
   const { state, dispatch } = props;
- 
+ console.log("CURR STATE", state)
 
   return (
     <div className="action-panel">
       <div className="buttons">
         {state.recording === false && state.timeElapsed && (
-          <button type="button" onClick={() => dispatch(reset())}>
-            Reset
+          <button type="button" onClick={() => dispatch(reset(state))}>
+            Restart
           </button>
         )}
         {state.recording === false && state.timeElapsed === null && (
@@ -74,20 +76,20 @@ function ActionBar(props) {
           </button>
         )}
 
-        {state.timeElapsed && (
-          <button type="button" onClick={() => dispatch(playRecording())}>
+        {state.timeElapsed && !state.playing && (
+          <button type="button" onClick={() => dispatch(playRecording(state))}>
             Play
           </button>
         )}
 
         {state.timeElapsed && (
-          <button type="button" onClick={() => dispatch(saveRecording())}>
+          <button type="button" onClick={() => dispatch(saveRecording(state))}>
             Save
           </button>
         )}
 
         {state.recording === false && (
-          <button type="button" onClick={() => dispatch(openBindings())}>
+          <button type="button" onClick={() => dispatch(openBindings(state))}>
           Bindings
           </button>
         )}

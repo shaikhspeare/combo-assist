@@ -130,3 +130,20 @@ body, html {
   width: 400px;
   height: 400px;
 }
+
+.header {
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+}
+.header h1 {
+  width: 960px;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  font-weight: bold;
+}
+
+.header span {
+  font-family: 'Poppins', sans-serif;
+  color: white;
+}
