@@ -1,6 +1,5 @@
 .nameContainer {
   position: relative;
-  width: 90vw;
   height: 5vh;
   background: rgb(2, 0, 36);
   background: linear-gradient(
@@ -9,8 +8,8 @@
     rgba(9, 9, 121, 1) 35%,
     rgba(0, 212, 255, 1) 100%
   );
-  margin: 0 auto;
   margin-top: 50px;
+  margin-bottom: 20px;
   box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
   font-size: 24px;
   display: flex;
