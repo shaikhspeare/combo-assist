@@ -1,11 +1,10 @@
 .action-panel {
     display: flex;
-    width: 90vw;
-    margin: 0 auto;
     margin-top: 20px;
     height: 60px;
     justify-content: left;
     align-items: flex-start;
+    width: 960px;
   }
   
   

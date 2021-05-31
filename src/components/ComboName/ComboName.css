@@ -29,6 +29,7 @@
   text-transform: uppercase;
   color: white;
   z-index: -1;
+  width: 960px;
 }
 
 .comboInput::placeholder {

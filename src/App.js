@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable react/jsx-filename-extension */
 /* eslint-disable no-console */
 import React, { useReducer, useEffect, useState, useRef } from 'react';
@@ -11,7 +12,7 @@ import { getButton, buttons } from './components/ButtonMap/ButtonMap';
 import ComboName from './components/ComboName/ComboName';
 import Button from './utils/ButtonLinks';
 import KeyboardController from './components/KeyboardController';
-import circle from './components/ButtonMap/images/circle.svg';
+
 /**
  * recording: Is tool currently recording
  * playing: Is tool currently playing
@@ -31,6 +32,7 @@ const initialState = {
   timeElapsed: null,
   bindingIsOpen: false,
   inputMode: 'controller',
+  buttonMappings: {},
 };
 
 function reducer(state, action) {
@@ -69,82 +71,91 @@ function setPCBinding(button) {}
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [startTime, setStartTime] = useState(0);
-  const loadImages = () => {
-      const img = new Image();
-      img.src = circle
-      return [img]
-  }
-  const [loadedImages, setLoadedImages] = useState(loadImages);
+
+  const [loadedImages, setLoadedImages] = useState({});
   const requestRef = useRef();
   const canvasRef = useRef();
   function draw() {
     if (!canvasRef.current) return;
-
-    const button = loadedImages[0];
     const ctx = canvasRef.current.getContext('2d');
     ctx.imageSmoothingEnabled = false;
-
-    ctx.globalCompositeOperation = 'destination-over';
+    ctx.globalCompositeOperation = 'source-over';
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight); // clear canvas
-    // ctx.drawImage(button, 30, 10);
+    ctx.fillStyle = 'rgba(208, 1, 27, 0.3)';
+    ctx.fillRect(0, 0, (Date.now() - startTime) / 10, 150); // Shadow
+    ctx.save();
 
-    console.log("STATE", state);
     state.buttonsPressed.forEach((btn) => {
-        console.log("Pressed", startTime, (Date.now() - startTime + btn.timeReleased) / 60,  (Date.now() - startTime) / 60)
-        ctx.drawImage(button, (Date.now() - startTime + btn.timeReleased) / 60, 0);
+        ctx.drawImage(loadedImages[btn.button], (btn.timeReleased) / 10, 50, 25, 25);
+        ctx.save();
     })
-    ctx.save();
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-    ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
-    ctx.fillRect(0, 0, (Date.now() - startTime) / 60, 150); // Shadow
+  
+    requestRef.current = window.requestAnimationFrame(draw);
+  }
+
+  function resetCanvas() {
+    const ctx = canvasRef.current.getContext('2d');
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight); // clear canvas
     ctx.save();
 
-    // requestRef.current = window.requestAnimationFrame(draw);
   }
 
   useEffect(() => {
-    if (state.recording) {
+    console.log('cancelled frame', state.recording)
+
+    if (state.recording && !state.playing) {
       setStartTime(Date.now());
     } else {
+        console.log("CANCELLING")
       window.cancelAnimationFrame(requestRef.current);
+
     }
   }, [state.recording]);
 
   useEffect(() => {
-      if (state.buttonsPressed.length > 0) {
+    console.log("START TIME", startTime)
+    if (startTime !== 0 && state.recording) {
+        window.cancelAnimationFrame(requestRef.current);
+        requestRef.current = window.requestAnimationFrame(draw);
+
+    }
+  }, [startTime])
+
+
+  useEffect(() => {
+      if (state.buttonsPressed.length > 0 && state.recording) {
+        window.cancelAnimationFrame(requestRef.current);
          requestRef.current = window.requestAnimationFrame(draw);
+    } else if (state.buttonsPressed.length === 0 && !state.recording) {
+        window.cancelAnimationFrame(requestRef.current);
+        requestRef.current = window.requestAnimationFrame(resetCanvas);
     }
   }, [state.buttonsPressed])
 
-  useEffect(() => {
-    console.log('effect', canvasRef.current);
-    if (startTime !== 0) {
-        const images = [
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/PNG_Test.png/800px-PNG_Test.png',
-          ];
-          const loadedImages = {};
-          const promiseArray = images.map(function (imgurl) {
-            const prom = new Promise(function (resolve, reject) {
-              const img = new Image();
-              img.onload = function () {
-                loadedImages[imgurl] = img;
-                resolve();
-              };
-              img.src = imgurl;
-            });
-            return prom;
-          });
-    
-        //   Promise.all(promiseArray).then(() => {
-        //     requestRef.current = window.requestAnimationFrame(draw);
-        //   });
-    }
-  }, [startTime]);
 
   useEffect(() => {
     const inputMode = localStorage.getItem('inputMode') || 'controller'
     dispatch(setInputMode(inputMode))
   }, [])
+
+  useEffect(() => {
+    const newButtonMap = {} 
+    if (state.inputMode === 'PC') {
+        for (const [_, value] of Object.entries(buttons)) {
+            const img = new Image();
+            img.src = value.img
+            newButtonMap[value.PC] = img
+          }
+        setLoadedImages(newButtonMap);
+    } else {
+        for (const [key, value] of Object.entries(buttons)) {
+            const img = new Image();
+            img.src = value.img
+            newButtonMap[key] = img
+          }
+        setLoadedImages(newButtonMap);
+    }
+  }, [state.inputMode])
   const customStyles = {
     content: {
       top: '50%',
@@ -173,8 +184,8 @@ function App() {
             <Gamepad
               onConnect={connectHandler}
               onDisconnect={disconnectHandler}
-              onButtonDown={(buttonName) => Button.buttonDownHandler(buttonName, state)}
-              onButtonUp={(buttonName) => dispatch(Button.buttonUpHandler(buttonName, state))}
+              onButtonDown={(buttonName) => loadedImages[buttonName] && Button.buttonDownHandler(buttonName, state)}
+              onButtonUp={(buttonName) => loadedImages[buttonName] && dispatch(Button.buttonUpHandler(buttonName, state))}
             >
               <></>
             </Gamepad>
@@ -182,8 +193,8 @@ function App() {
 
           {state.recording === true && state.inputMode === 'PC' && (
             <KeyboardController
-              onButtonDown={(buttonName) => Button.buttonDownHandler(buttonName, state)}
-              onButtonUp={(buttonName) => dispatch(Button.buttonUpHandler(buttonName, state))}
+              onButtonDown={(buttonName) => loadedImages[buttonName] && Button.buttonDownHandler(buttonName, state)}
+              onButtonUp={(buttonName) => loadedImages[buttonName] && dispatch(Button.buttonUpHandler(buttonName, state))}
             />
           )}
         </div>

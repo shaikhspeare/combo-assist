@@ -32,7 +32,7 @@ export default class Button {
   }
 
   static buttonUpHandler(buttonName, state) {
-    console.log('Up', this.timeDown);
+    console.log('Up', buttonName, this.timeDown);
     if (this.timeDown) {
       const timeReleased = Date.now() - state.currTime;
       const newButton = new Button(buttonName, this.timeDown, timeReleased);

@@ -10,14 +10,14 @@ import triangle from './images/triangle.svg';
 
 
 export const buttons = {
-  X: { img: square, PC: 'A' },
-  Y: { img: triangle, PC: 'B' },
-  B: { img: circle, PC: 'C' },
-  A: { img: cross, PC: 'D' },
-  DPadUp: { img: up, PC: 'up' },
-  DPadRight: { img: right, PC: 'right' },
-  DPadDown: { img: downButton, PC: 'down' },
-  DPadLeft: { img: left, PC: 'left' },
+  X: { img: square, PC: 'w' },
+  Y: { img: triangle, PC: 'a' },
+  B: { img: circle, PC: 's' },
+  A: { img: cross, PC: 'd' },
+  DPadUp: { img: up, PC: 'ArrowUp' },
+  DPadRight: { img: right, PC: 'ArrowRight' },
+  DPadDown: { img: downButton, PC: 'ArrowDown' },
+  DPadLeft: { img: left, PC: 'ArrowLeft' },
 };
 
 export function getButton(buttonName) {

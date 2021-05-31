@@ -62,7 +62,7 @@ function ActionBar(props) {
             Reset
           </button>
         )}
-        {state.recording === false && (
+        {state.recording === false && state.timeElapsed === null && (
           <button type="button" onClick={() => dispatch(toggleRecording(state))}>
             Record
           </button>

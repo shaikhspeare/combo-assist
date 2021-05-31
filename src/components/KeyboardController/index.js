@@ -4,15 +4,17 @@ function KeyboardController(props) {
     const {onButtonDown, onButtonUp} = props;
 
     const registerKeyDown = (event) => {
-        onButtonDown('X');
+        const keyCode = event.key
+        console.log("PRESSED", keyCode)
+        onButtonDown(keyCode);
     }
 
     const registerKeyUp = (event) => {
-        onButtonUp('X');
+        const keyCode = event.key
+        onButtonUp(keyCode);
     }
 
     useEffect(() => {
-        console.log('Keyboard loaded')
         window.addEventListener('keydown', registerKeyDown);
         window.addEventListener('keyup', registerKeyUp);
 
