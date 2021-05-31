@@ -40,11 +40,17 @@ body, html {
   width: 960px;
 }
 
-
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('./images/background2.png');
+}
 
 #canvas {
     background-color: #333333;
-    margin-top: 30px;
     box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 }
 .button-map {
@@ -79,7 +85,6 @@ body, html {
 
 .Modal {
   position: absolute;
-
   font-size: 48px;
   background-color: rgba(38,50,56 ,1);
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);

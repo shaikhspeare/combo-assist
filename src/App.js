@@ -86,10 +86,10 @@ function App() {
     ctx.save();
 
     state.buttonsPressed.forEach((btn) => {
-        ctx.drawImage(loadedImages[btn.button], (btn.timeReleased) / 10, 50, 25, 25);
-        ctx.save();
-    })
-  
+      ctx.drawImage(loadedImages[btn.button], btn.timeReleased / 10, 50, 25, 25);
+      ctx.save();
+    });
+
     requestRef.current = window.requestAnimationFrame(draw);
   }
 
@@ -97,76 +97,72 @@ function App() {
     const ctx = canvasRef.current.getContext('2d');
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight); // clear canvas
     ctx.save();
-
   }
 
   useEffect(() => {
-    console.log('cancelled frame', state.recording)
+    console.log('cancelled frame', state.recording);
 
     if (state.recording && !state.playing) {
       setStartTime(Date.now());
     } else {
-        console.log("CANCELLING")
+      console.log('CANCELLING');
       window.cancelAnimationFrame(requestRef.current);
-
     }
   }, [state.recording]);
 
   useEffect(() => {
-    console.log("START TIME", startTime)
+    console.log('START TIME', startTime);
     if (startTime !== 0 && state.recording) {
-        window.cancelAnimationFrame(requestRef.current);
-        requestRef.current = window.requestAnimationFrame(draw);
-
+      window.cancelAnimationFrame(requestRef.current);
+      requestRef.current = window.requestAnimationFrame(draw);
     }
     if (startTime !== 0 && state.playing) {
-        window.cancelAnimationFrame(requestRef.current);
-        requestRef.current = window.requestAnimationFrame(draw);
-
+      window.cancelAnimationFrame(requestRef.current);
+      requestRef.current = window.requestAnimationFrame(draw);
     }
-  }, [startTime])
-
+  }, [startTime]);
 
   useEffect(() => {
-      if (state.buttonsPressed.length > 0 && state.recording) {
-        window.cancelAnimationFrame(requestRef.current);
-         requestRef.current = window.requestAnimationFrame(draw);
+    if (state.buttonsPressed.length > 0 && state.recording) {
+      window.cancelAnimationFrame(requestRef.current);
+      requestRef.current = window.requestAnimationFrame(draw);
     } else if (state.buttonsPressed.length === 0 && !state.recording) {
-        window.cancelAnimationFrame(requestRef.current);
-        requestRef.current = window.requestAnimationFrame(resetCanvas);
+      window.cancelAnimationFrame(requestRef.current);
+      requestRef.current = window.requestAnimationFrame(resetCanvas);
     }
-  }, [state.buttonsPressed])
-
-
-  useEffect(() => {
-    const inputMode = localStorage.getItem('inputMode') || 'controller'
-    dispatch(setInputMode(inputMode))
-  }, [])
+  }, [state.buttonsPressed]);
 
   useEffect(() => {
-    const newButtonMap = {} 
+    const inputMode = localStorage.getItem('inputMode');
+    if (inputMode) {
+      dispatch(setInputMode(inputMode));
+    }
+  }, []);
+
+  useEffect(() => {
+    const newButtonMap = {};
     if (state.inputMode === 'PC') {
-        for (const [_, value] of Object.entries(buttons)) {
-            const img = new Image();
-            img.src = value.img
-            newButtonMap[value.PC] = img
-          }
-        setLoadedImages(newButtonMap);
+      for (const [_, value] of Object.entries(buttons)) {
+        const img = new Image();
+        img.src = value.img;
+        newButtonMap[value.PC] = img;
+      }
+      setLoadedImages(newButtonMap);
     } else {
-        for (const [key, value] of Object.entries(buttons)) {
-            const img = new Image();
-            img.src = value.img
-            newButtonMap[key] = img
-          }
-        setLoadedImages(newButtonMap);
+      for (const [key, value] of Object.entries(buttons)) {
+        const img = new Image();
+        img.src = value.img;
+        newButtonMap[key] = img;
+      }
+      setLoadedImages(newButtonMap);
     }
-  }, [state.inputMode])
+  }, [state.inputMode]);
 
   useEffect(() => {
     if (state.playing) {
-       setStartTime(Date.now())
+      setStartTime(Date.now());
     }
-  }, [state.playing])
+  }, [state.playing]);
   const customStyles = {
     content: {
       top: '50%',
@@ -188,15 +184,24 @@ function App() {
 
         <div className="content">
           <ComboName state={state} />
-          <canvas ref={canvasRef} id="canvas" style={{ height: '20vh', width: '960px' }} width="960" />
+          <canvas
+            ref={canvasRef}
+            id="canvas"
+            style={{ height: '20vh', width: '960px' }}
+            width="960"
+          />
           <ActionBar state={state} dispatch={dispatch} />
 
           {state.recording === true && state.inputMode === 'controller' && (
             <Gamepad
               onConnect={connectHandler}
               onDisconnect={disconnectHandler}
-              onButtonDown={(buttonName) => loadedImages[buttonName] && Button.buttonDownHandler(buttonName, state)}
-              onButtonUp={(buttonName) => loadedImages[buttonName] && dispatch(Button.buttonUpHandler(buttonName, state))}
+              onButtonDown={(buttonName) =>
+                loadedImages[buttonName] && Button.buttonDownHandler(buttonName, state)
+              }
+              onButtonUp={(buttonName) =>
+                loadedImages[buttonName] && dispatch(Button.buttonUpHandler(buttonName, state))
+              }
             >
               <></>
             </Gamepad>
@@ -204,8 +209,12 @@ function App() {
 
           {state.recording === true && state.inputMode === 'PC' && (
             <KeyboardController
-              onButtonDown={(buttonName) => loadedImages[buttonName] && Button.buttonDownHandler(buttonName, state)}
-              onButtonUp={(buttonName) => loadedImages[buttonName] && dispatch(Button.buttonUpHandler(buttonName, state))}
+              onButtonDown={(buttonName) =>
+                loadedImages[buttonName] && Button.buttonDownHandler(buttonName, state)
+              }
+              onButtonUp={(buttonName) =>
+                loadedImages[buttonName] && dispatch(Button.buttonUpHandler(buttonName, state))
+              }
             />
           )}
         </div>
@@ -217,6 +226,8 @@ function App() {
         isOpen={state.bindingIsOpen}
         onRequestClose={() => dispatch(closeModal())}
         contentLabel="Example Modal"
+        overlayClassName="overlay"
+
       >
         <h2 className="bindings-header">Key Bindings</h2>
 
@@ -238,7 +249,31 @@ function App() {
               buttonStyle="solid"
             >
               <Radio.Button value="controller">Controller</Radio.Button>
-              <Radio.Button value="PC">PC</Radio.Button>
+              <Radio.Button value="PC">Keyboard</Radio.Button>
+            </Radio.Group>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        className="Modal"
+        style={customStyles}
+        isOpen={!localStorage.getItem('inputMode')}
+        onRequestClose={() => dispatch(closeModal())}
+        contentLabel="Example Modal"
+        overlayClassName="overlay"
+
+      >
+        <div>
+          <h2 className="bindings-header">Are you using a controller or a keyboard?</h2>
+          <div className="mode-select" style={{display: 'flex', justifyContent: 'center'}}>
+            <Radio.Group
+              onChange={(change) => dispatch(setInputMode(change.target.value))}
+              defaultValue={state.inputMode}
+              buttonStyle="solid"
+            >
+              <Radio.Button value="controller">Controller</Radio.Button>
+              <Radio.Button value="PC">Keyboard</Radio.Button>
             </Radio.Group>
           </div>
         </div>
