@@ -119,6 +119,11 @@ function App() {
         requestRef.current = window.requestAnimationFrame(draw);
 
     }
+    if (startTime !== 0 && state.playing) {
+        window.cancelAnimationFrame(requestRef.current);
+        requestRef.current = window.requestAnimationFrame(draw);
+
+    }
   }, [startTime])
 
 
@@ -156,6 +161,12 @@ function App() {
         setLoadedImages(newButtonMap);
     }
   }, [state.inputMode])
+
+  useEffect(() => {
+    if (state.playing) {
+       setStartTime(Date.now())
+    }
+  }, [state.playing])
   const customStyles = {
     content: {
       top: '50%',
